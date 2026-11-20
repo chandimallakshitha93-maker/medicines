@@ -155,7 +155,21 @@ function parseCSV(t){t=t.replace(/^\uFEFF/,"");const rows=[];let row=[],f="",q=f
   if(f||row.length){row.push(f);rows.push(row)}
   const h=rows.shift().map(x=>x.trim().toLowerCase());const key={item:"n",area:"a",place:"p",code:"c",category:"k",note:"x",papercolour:"col",inventoryno:"i"};
   return rows.filter(r=>r.some(v=>v.trim())).map(r=>{const o={};h.forEach((k,j)=>{if(key[k])o[key[k]]=(r[j]||"").trim()});return o}).filter(o=>o.n)}
-fetch("data.csv?v="+Date.now()).then(r=>{if(!r.ok)throw 0;return r.text()}).then(parseCSV).catch(()=>fetch("data.json").then(r=>r.json())).then(d=>{DATA=d;try{const a=localStorage.getItem("area");if(a&&DATA.some(x=>x.a===a))area=a}catch(_){}chips();render()})
+const SHEET="13XRXroDrY89wAdDOR9IhkEN_0zrKXZk480bWdvU3s2Y";
+function mapHead(h){h=h.toLowerCase();
+  if(/timestamp|email/.test(h))return null;
+  if(/invent|ඉන්වෙ/.test(h))return "i";if(/colou?r|පැහැ/.test(h))return "col";if(/area|unit|section|ඒකකය|ප්‍රදේශ/.test(h))return "a";
+  if(/code|කේත/.test(h))return "c";if(/categor|type|වර්ග/.test(h))return "k";if(/note|remark|සටහන/.test(h))return "x";
+  if(/place|location|rack|level|box|cupboard|තැන|රාක්ක/.test(h))return "p";if(/item|name|නම|file|book/.test(h))return "n";return null}
+function parseSheet(t){t=t.replace(/^\uFEFF/,"");const rows=[];let row=[],f="",q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c=='"'){if(t[i+1]=='"'){f+='"';i++}else q=false}else f+=c}else if(c=='"')q=true;else if(c==','){row.push(f);f=""}else if(c=='\n'||c=='\r'){if(c=='\r'&&t[i+1]=='\n')i++;row.push(f);rows.push(row);row=[];f=""}else f+=c}
+  if(f||row.length){row.push(f);rows.push(row)}
+  if(!rows.length)return[];const h=rows.shift().map(x=>mapHead(x.trim()));if(!h.includes("n"))return[];
+  return rows.map(r=>{const o={};h.forEach((k,j)=>{if(k){const v=(r[j]||"").trim();o[k]=o[k]?o[k]+" · "+v:v}});o.a=o.a||"Other";o.p=o.p||"";o.c=o.c||"";o.k=o.k||"Added via form";o.x=o.x||"";return o}).filter(o=>o.n)}
+const gv=s=>fetch(`https://docs.google.com/spreadsheets/d/${SHEET}/gviz/tq?tqx=out:csv&${s}&_=${Date.now()}`).then(r=>r.ok?r.text():"").then(parseSheet).catch(()=>[]);
+const base=fetch("data.csv?v="+Date.now()).then(r=>{if(!r.ok)throw 0;return r.text()}).then(parseCSV).catch(()=>fetch("data.json").then(r=>r.json()));
+Promise.all([base,gv("gid=0"),gv("sheet="+encodeURIComponent("Form Responses 1"))]).then(([b,s1,s2])=>{
+  const seen=new Set(),extra=[];[...s1,...s2].forEach(o=>{const k=o.n+"|"+o.p;if(!seen.has(k)){seen.add(k);extra.push(o)}});return [...extra,...b]}).then(d=>{DATA=d;try{const a=localStorage.getItem("area");if(a&&DATA.some(x=>x.a===a))area=a}catch(_){}chips();render()})
   .catch(()=>{$("#count").textContent="Could not load the item list.";$("#res").innerHTML='<li class="empty">The item list did not load. Refresh the page to try again.</li>'});
 </script>
 
