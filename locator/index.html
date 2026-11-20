@@ -148,7 +148,14 @@ $("#q").addEventListener("input",()=>{shown=60;render()});
 $("#clear").addEventListener("click",()=>{$("#q").value="";shown=60;render();$("#q").focus()});
 $("#chips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;area=b.dataset.a;shown=60;chips();render();try{localStorage.setItem("area",area)}catch(_){}});
 $("#more").addEventListener("click",()=>{shown+=100;render()});
-fetch("data.json").then(r=>r.json()).then(d=>{DATA=d;try{const a=localStorage.getItem("area");if(a&&DATA.some(x=>x.a===a))area=a}catch(_){}chips();render()})
+function parseCSV(t){t=t.replace(/^\uFEFF/,"");const rows=[];let row=[],f="",q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c=='"'){if(t[i+1]=='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c=='"')q=true;else if(c==','){row.push(f);f=""}else if(c=='\n'||c=='\r'){if(c=='\r'&&t[i+1]=='\n')i++;row.push(f);rows.push(row);row=[];f=""}else f+=c}
+  if(f||row.length){row.push(f);rows.push(row)}
+  const h=rows.shift().map(x=>x.trim().toLowerCase());const key={item:"n",area:"a",place:"p",code:"c",category:"k",note:"x",papercolour:"col",inventoryno:"i"};
+  return rows.filter(r=>r.some(v=>v.trim())).map(r=>{const o={};h.forEach((k,j)=>{if(key[k])o[key[k]]=(r[j]||"").trim()});return o}).filter(o=>o.n)}
+fetch("data.csv?v="+Date.now()).then(r=>{if(!r.ok)throw 0;return r.text()}).then(parseCSV).catch(()=>fetch("data.json").then(r=>r.json())).then(d=>{DATA=d;try{const a=localStorage.getItem("area");if(a&&DATA.some(x=>x.a===a))area=a}catch(_){}chips();render()})
   .catch(()=>{$("#count").textContent="Could not load the item list.";$("#res").innerHTML='<li class="empty">The item list did not load. Refresh the page to try again.</li>'});
 </script>
 
