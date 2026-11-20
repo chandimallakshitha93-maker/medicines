@@ -30,6 +30,7 @@ header.top .wrap{padding-block:14px 12px;display:flex;flex-direction:column;gap:
 .brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
 h1{margin:0;font-family:var(--f-display);font-size:1.45rem;letter-spacing:-.01em;text-wrap:balance}
 h1 small{display:block;font-family:var(--f-si);font-weight:600;font-size:.85rem;color:var(--muted);letter-spacing:0}
+.add{font-weight:700;font-size:.8rem;text-decoration:none;background:var(--accent);color:var(--accent-ink);padding:6px 10px;border-radius:8px;white-space:nowrap}.add:focus-visible{outline:2px solid var(--fg)}
 .count{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .search{position:relative}
 .search input{width:100%;font:inherit;font-size:1.05rem;padding:12px 44px 12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg)}
@@ -73,7 +74,7 @@ html{-webkit-text-size-adjust:100%}body{margin:0;padding-block:env(safe-area-ins
   <div class="wrap">
     <div class="brand">
       <h1>Hospital Locator<small>ප්‍රාදේශීය රෝහල, ගන්තුන · සොයාගැනීමේ නාමාවලිය</small></h1>
-      <div class="count" id="count">Loading…</div>
+      <div style="display:flex;gap:10px;align-items:center"><div class="count" id="count">Loading…</div><a class="add" href="https://forms.gle/h6vStvk4md5fKLqTA" target="_blank" rel="noopener">+ Add item</a></div>
     </div>
     <div class="search">
       <label for="q" class="sr" style="position:absolute;left:-9999px">Search</label>
