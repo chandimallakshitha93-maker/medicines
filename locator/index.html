@@ -31,6 +31,7 @@ header.top .wrap{padding-block:14px 12px;display:flex;flex-direction:column;gap:
 h1{margin:0;font-family:var(--f-display);font-size:1.45rem;letter-spacing:-.01em;text-wrap:balance}
 h1 small{display:block;font-family:var(--f-si);font-weight:600;font-size:.85rem;color:var(--muted);letter-spacing:0}
 .add{font-weight:700;font-size:.8rem;text-decoration:none;background:var(--accent);color:var(--accent-ink);padding:6px 10px;border-radius:8px;white-space:nowrap}.add:focus-visible{outline:2px solid var(--fg)}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:8px}.acts>*{text-align:center;font-weight:700;font-size:.85rem;padding:9px 6px;border-radius:9px}.a1{background:var(--bg);border:1px solid var(--line);color:var(--muted)}.a2{background:#1565C0;color:#fff;text-decoration:none}.a2:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
 .count{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .search{position:relative}
 .search input{width:100%;font:inherit;font-size:1.05rem;padding:12px 44px 12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg)}
@@ -81,6 +82,7 @@ html{-webkit-text-size-adjust:100%}body{margin:0;padding-block:env(safe-area-ins
       <input id="q" type="search" autocomplete="off" placeholder="Drug, file, item, code or inventory no.  උදා: Metformin, නිවාඩු, 26, C-05">
       <button id="clear" type="button" aria-label="Clear search">×</button>
     </div>
+    <div class="acts"><span class="a1">🔍 සොයන්න · Find – type above</span><a class="a2" href="https://forms.gle/h6vStvk4md5fKLqTA" target="_blank" rel="noopener">➕ එක් කරන්න · Add an item</a></div>
     <div class="chips" id="chips" role="toolbar" aria-label="Filter by area"></div>
   </div>
 </header>
@@ -142,7 +144,7 @@ function paint(r,terms){
     <div class="t"><div class="n">${hl(d.n,terms)}${d.col?`<span class="sw" title="Paper colour" style="background:${d.col}"></span>`:""}</div>
     <div class="p"><em>${esc(d.a)}</em> · ${hl(d.p,terms)}</div>
     ${d.k||d.x?`<div class="k">${esc(d.k)}${d.x?` · <span class="tbc">${esc(d.x)}</span>`:""}</div>`:""}</div>
-    <span class="code">${hl(d.c,terms)}${d.i?`<br><small class="inv">Inv. Pg ${hl(d.i,terms)}</small>`:""}</span></li>`).join(""):`<li class="empty">No match for “${esc($("#q").value)}”. Try a shorter word, or the English or Sinhala name.</li>`;
+    <span class="code">${hl(d.c,terms)}${d.i?`<br><small class="inv">Inv. Pg ${hl(d.i,terms)}</small>`:""}</span></li>`).join(""):`<li class="empty">No match for “${esc($("#q").value)}”. Try a shorter word, or the English or Sinhala name.<br><br>Not in the list? <a href="https://forms.gle/h6vStvk4md5fKLqTA" target="_blank" rel="noopener">Add it here</a>.</li>`;
   $("#more").hidden=r.length<=shown;
 }
 $("#q").addEventListener("input",()=>{shown=60;render()});
