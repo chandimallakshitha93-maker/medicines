@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="si">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ganthuna Hospital Locator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=Noto+Sans+Sinhala:wght@400;600;700&display=swap">
+<style>
+/* Layout: sticky search band on top, area chips, then a single column of result rows with a location badge */
+:root{
+  --bg:#F4F7F6; --surface:#FFFFFF; --fg:#13211E; --muted:#5B6B67; --line:#DCE5E2;
+  --accent:#0E6E5C; --accent-ink:#FFFFFF; --hit:#FFE8A3;
+  --f-display:"Space Grotesk","Inter",system-ui,sans-serif;
+  --f-body:"Inter","Noto Sans Sinhala",system-ui,sans-serif;
+  --f-si:"Noto Sans Sinhala","Inter",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1715; --surface:#17221F; --fg:#E6EFEC; --muted:#93A7A1; --line:#26352F;
+  --accent:#3CC4A5; --accent-ink:#06231C; --hit:#5A4A12; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1715; --surface:#17221F; --fg:#E6EFEC; --muted:#93A7A1; --line:#26352F;
+  --accent:#3CC4A5; --accent-ink:#06231C; --hit:#5A4A12; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+header.top .wrap{padding-block:14px 12px;display:flex;flex-direction:column;gap:10px}
+.brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{margin:0;font-family:var(--f-display);font-size:1.45rem;letter-spacing:-.01em;text-wrap:balance}
+h1 small{display:block;font-family:var(--f-si);font-weight:600;font-size:.85rem;color:var(--muted);letter-spacing:0}
+.count{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.search{position:relative}
+.search input{width:100%;font:inherit;font-size:1.05rem;padding:12px 44px 12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg)}
+.search input:focus{outline:none;border-color:var(--accent)}
+.search button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--muted);font-size:1.3rem;cursor:pointer;padding:6px 10px;border-radius:6px}
+.search button:focus-visible{outline:2px solid var(--accent)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:thin}
+.chip{flex:none;display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:.8rem;font-weight:600;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.chip i{width:10px;height:10px;border-radius:50%;background:var(--c);border:1px solid rgba(0,0,0,.25)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chip b{font-weight:500;opacity:.75;font-variant-numeric:tabular-nums}
+main .wrap{padding-block:14px 40px}
+.how{display:flex;gap:10px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin-bottom:12px}
+.how span{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:4px 8px}
+.how code{font-family:var(--f-display);font-weight:700;color:var(--fg)}
+ul.res{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.row{display:grid;grid-template-columns:6px 1fr auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px 10px 0;overflow:hidden}
+.row .bar{align-self:stretch;background:var(--c);border-right:1px solid rgba(0,0,0,.12)}
+.row .t{min-width:0}
+.row .n{font-weight:600;font-family:var(--f-body);overflow-wrap:anywhere}
+.row .p{font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+.row .p em{font-style:normal;color:var(--fg);font-weight:600}
+.row .k{font-size:.72rem;color:var(--muted);margin-top:2px}
+.row .k .tbc{color:#B45309;font-weight:600}
+.code{font-family:var(--f-display);font-weight:700;font-size:.85rem;padding:5px 9px;border-radius:7px;background:var(--bg);border:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
+.code .inv{font-family:var(--f-body);font-weight:600;font-size:.72rem;color:var(--muted)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;margin-left:6px;border:1px solid rgba(0,0,0,.3)}
+mark{background:var(--hit);color:inherit;border-radius:2px;padding:0 1px}
+.empty{text-align:center;color:var(--muted);padding:40px 10px}
+.more{display:block;margin:14px auto 0;font:inherit;font-weight:600;padding:9px 16px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+footer{font-size:.75rem;color:var(--muted);text-align:center;padding-block:10px 24px}
+@media (max-width:520px){.row{grid-template-columns:6px 1fr;}.row .code{grid-column:2;justify-self:start}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{-webkit-text-size-adjust:100%}body{margin:0;padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <h1>Hospital Locator<small>ප්‍රාදේශීය රෝහල, ගන්තුන · සොයාගැනීමේ නාමාවලිය</small></h1>
+      <div class="count" id="count">Loading…</div>
+    </div>
+    <div class="search">
+      <label for="q" class="sr" style="position:absolute;left:-9999px">Search</label>
+      <input id="q" type="search" autocomplete="off" placeholder="Drug, file, item, code or inventory no.  උදා: Metformin, නිවාඩු, 26, C-05">
+      <button id="clear" type="button" aria-label="Clear search">×</button>
+    </div>
+    <div class="chips" id="chips" role="toolbar" aria-label="Filter by area"></div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="how">
+      <span><code>DS-R5-L3-07</code> Drug store · Rack 5 · Level 3 · No. 07</span>
+      <span><code>OF-C2-R1-B03</code> Office · Cupboard 2 · Rack 1 · Book 03</span>
+      <span><code>RR-2-1-3</code> Record room · Rack 2 · Level 1 · Box 3</span>
+      <span><code>26</code> or <code>inv 26</code> Inventory page number · <code>C-05</code> cupboard/table ID</span>
+    </div>
+    <ul class="res" id="res"></ul>
+    <button class="more" id="more" type="button" hidden>Show more</button>
+  </div>
+</main>
+<footer class="wrap">Built from the hospital's 5S labels · Updated 20 Nov 2026 · Return every item to its labelled place</footer>
+
+<script>
+const AREA={
+ "Main Drug Store":"#EF6C00","Office":"#90A4AE","Record Room":"#6D4C41","Dental":"#FDD835","NCD / PHNO":"#AED581",
+ "Maintenance Unit":"#37474F","Store Room":"#546E7A","ETU":"#2E7D32","OPD":"#81D4FA","Dispensary":"#EF6C00",
+ "Suwadivi (NCD)":"#AED581","Laboratory":"#C62828"};
+const colorOf=a=>AREA[a]||"#212121";
+let DATA=[],area="All",shown=60;
+const $=s=>document.querySelector(s);
+const norm=s=>(s||"").toLowerCase().normalize("NFC");
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function hl(t,terms){let h=esc(t);for(const w of terms){if(!w)continue;const r=new RegExp("("+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","gi");h=h.replace(r,"<mark>$1</mark>")}return h}
+function chips(){
+  const counts={};DATA.forEach(d=>counts[d.a]=(counts[d.a]||0)+1);
+  const order=["All",...Object.keys(counts).sort((a,b)=>counts[b]-counts[a])];
+  $("#chips").innerHTML=order.map(a=>`<button class="chip" type="button" data-a="${esc(a)}" aria-pressed="${a===area}" style="--c:${a==="All"?"var(--accent)":colorOf(a)}"><i></i>${esc(a)} <b>${a==="All"?DATA.length:counts[a]}</b></button>`).join("");
+}
+function render(){
+  const raw=norm($("#q").value.trim());
+  const invM=raw.match(/^(?:inv(?:entory)?|pg|page|g\.?\s*inv\.?)?\s*(?:no\.?|pg\.?|page)?\s*(\d{1,4})$/);
+  const q=raw,terms=q.split(/\s+/).filter(Boolean);
+  let r=DATA.filter(d=>(area==="All"||d.a===area));
+  if(invM){
+    const n=invM[1],strict=/^\D/.test(raw);
+    const inv=r.filter(d=>d.i===n);
+    const rest=strict?[]:r.filter(d=>d.i!==n&&norm([d.n,d.p,d.c].join(" ")).includes(n));
+    r=[...inv,...rest];
+    $("#count").textContent=`${inv.length} with inventory page ${n}`+(rest.length?` · ${rest.length} other matches`:"");
+    paint(r,[n]);return;
+  }
+  if(terms.length){
+    r=r.map(d=>{const hay=norm([d.n,d.p,d.c,d.k,d.a].join(" "));if(!terms.every(t=>hay.includes(t)))return null;
+      const n=norm(d.n);let s=0;terms.forEach(t=>{if(n.startsWith(t))s+=3;else if(n.includes(t))s+=2;else s+=1});return [s,d]}).filter(Boolean)
+      .sort((a,b)=>b[0]-a[0]||a[1].n.localeCompare(b[1].n)).map(x=>x[1]);
+  }
+  $("#count").textContent=`${r.length} of ${DATA.length} items`;
+  paint(r,terms);
+}
+function paint(r,terms){
+  const list=r.slice(0,shown);
+  $("#res").innerHTML=list.length?list.map(d=>`<li class="row" style="--c:${colorOf(d.a)}"><span class="bar"></span>
+    <div class="t"><div class="n">${hl(d.n,terms)}${d.col?`<span class="sw" title="Paper colour" style="background:${d.col}"></span>`:""}</div>
+    <div class="p"><em>${esc(d.a)}</em> · ${hl(d.p,terms)}</div>
+    ${d.k||d.x?`<div class="k">${esc(d.k)}${d.x?` · <span class="tbc">${esc(d.x)}</span>`:""}</div>`:""}</div>
+    <span class="code">${hl(d.c,terms)}${d.i?`<br><small class="inv">Inv. Pg ${hl(d.i,terms)}</small>`:""}</span></li>`).join(""):`<li class="empty">No match for “${esc($("#q").value)}”. Try a shorter word, or the English or Sinhala name.</li>`;
+  $("#more").hidden=r.length<=shown;
+}
+$("#q").addEventListener("input",()=>{shown=60;render()});
+$("#clear").addEventListener("click",()=>{$("#q").value="";shown=60;render();$("#q").focus()});
+$("#chips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;area=b.dataset.a;shown=60;chips();render();try{localStorage.setItem("area",area)}catch(_){}});
+$("#more").addEventListener("click",()=>{shown+=100;render()});
+fetch("data.json").then(r=>r.json()).then(d=>{DATA=d;try{const a=localStorage.getItem("area");if(a&&DATA.some(x=>x.a===a))area=a}catch(_){}chips();render()})
+  .catch(()=>{$("#count").textContent="Could not load the item list.";$("#res").innerHTML='<li class="empty">The item list did not load. Refresh the page to try again.</li>'});
+</script>
+
+</body>
+</html>
