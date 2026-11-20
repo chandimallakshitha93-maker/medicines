@@ -1,4 +1,6 @@
 ﻿Item,Area,Place,Code,Category,Note,PaperColour,InventoryNo
+Telephone 01 (දුරකථනය),DMO Room,DMO room,TEL-01,Equipment,,,
+Telephone 02 (දුරකථනය),Office,Office,TEL-02,Equipment,,,
 Sterilised Water,Main Drug Store,Rack 02 · Level 01 · No. 01,DS-R2-L1-01,Emergency Injections,,#FFFFFF,
 IV Glucose 25% / 50% (Inj),Main Drug Store,Rack 02 · Level 01 · No. 02,DS-R2-L1-02,Emergency Injections,,#FFFFFF,
 Adrenaline 1 mg/ml (Inj),Main Drug Store,Rack 02 · Level 01 · No. 03,DS-R2-L1-03,Emergency Injections,,#FFFFFF,
