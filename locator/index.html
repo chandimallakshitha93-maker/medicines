@@ -32,6 +32,7 @@ h1{margin:0;font-family:var(--f-display);font-size:1.45rem;letter-spacing:-.01em
 h1 small{display:block;font-family:var(--f-si);font-weight:600;font-size:.85rem;color:var(--muted);letter-spacing:0}
 .add{font-weight:700;font-size:.8rem;text-decoration:none;background:var(--accent);color:var(--accent-ink);padding:6px 10px;border-radius:8px;white-space:nowrap}.add:focus-visible{outline:2px solid var(--fg)}
 .acts{display:grid;grid-template-columns:1fr 1fr;gap:8px}.acts>*{text-align:center;font-weight:700;font-size:.85rem;padding:9px 6px;border-radius:9px}.a1{background:var(--bg);border:1px solid var(--line);color:var(--muted)}.a2{background:#1565C0;color:#fff;text-decoration:none}.a2:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.desc{margin:0;font-size:.85rem;color:var(--muted);line-height:1.4;max-width:70ch}.desc span{display:block;font-family:var(--f-si)}
 .count{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .search{position:relative}
 .search input{width:100%;font:inherit;font-size:1.05rem;padding:12px 44px 12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg)}
@@ -77,6 +78,7 @@ html{-webkit-text-size-adjust:100%}body{margin:0;padding-block:env(safe-area-ins
       <h1>Hospital Locator<small>ප්‍රාදේශීය රෝහල, ගන්තුන · සොයාගැනීමේ නාමාවලිය</small></h1>
       <div style="display:flex;gap:10px;align-items:center"><div class="count" id="count">Loading…</div><a class="add" href="https://forms.gle/h6vStvk4md5fKLqTA" target="_blank" rel="noopener">+ Add item</a></div>
     </div>
+    <p class="desc">Universal finder for Divisional Hospital Ganthuna. Find any drug, file, register, book, equipment, cupboard or table – and its rack, level, box, label code or inventory number. <span>රෝහලේ ඕනෑම ඖෂධයක්, ලිපිගොනුවක්, ලේඛනයක්, උපකරණයක් හෝ ඉන්වෙන්ටරි අංකයක් තිබෙන තැන සොයන්න.</span></p>
     <div class="search">
       <label for="q" class="sr" style="position:absolute;left:-9999px">Search</label>
       <input id="q" type="search" autocomplete="off" placeholder="Drug, file, item, code or inventory no.  උදා: Metformin, නිවාඩු, 26, C-05">
