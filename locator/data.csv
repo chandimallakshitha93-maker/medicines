@@ -1,4 +1,12 @@
 ﻿Item,Area,Place,Code,Category,Note,PaperColour,InventoryNo
+"One Side papers",Office,"Office Table 04 · File holder · Book 01",T4-01,OFFICE TABLE 04 FILE HOLDER,,#FFFFFF,
+"Daily internal cleaning (දෛනික අභ්‍යන්තර පිරිසිදු කිරීම්)",Office,"Office Table 04 · File holder · Book 02",T4-02,OFFICE TABLE 04 FILE HOLDER,,#FFFFFF,
+"Water bills (ජල බිල්පත්)",Office,"Office Table 04 · File holder · Book 03",T4-03,OFFICE TABLE 04 FILE HOLDER,,#FFFFFF,
+"Electricity bills (විදුලි බිල්පත්)",Office,"Office Table 04 · File holder · Book 04",T4-04,OFFICE TABLE 04 FILE HOLDER,,#FFFFFF,
+"Telephone bills (දුරකථන බිල්පත්)",Office,"Office Table 04 · File holder · Book 05",T4-05,OFFICE TABLE 04 FILE HOLDER,,#FFFFFF,
+"5S concept (පංචවිධ සංකල්පය)",Office,"Office Table 04 · File holder · Book 06",T4-06,OFFICE TABLE 04 FILE HOLDER,,#FFFFFF,
+"Outgoing letters (යවන ලිපි)",Office,"Office Table 04 · File holder · Book 07",T4-07,OFFICE TABLE 04 FILE HOLDER,,#FFFFFF,
+"Incoming letters (එවන ලිපි)",Office,"Office Table 04 · File holder · Book 08",T4-08,OFFICE TABLE 04 FILE HOLDER,,#FFFFFF,
 "Monthly Returns & Documents",Dental Unit,"Dental file holder · File 04",DEN-FH-04,DENTAL FILES & FORMS,,#FFF176,
 "Referral Forms",Dental Unit,"Dental file holder · File 05",DEN-FH-05,DENTAL FILES & FORMS,,#FFF176,
 "Other Relevants (Dental)",Dental Unit,"Dental file holder · File 06",DEN-FH-06,DENTAL FILES & FORMS,,#FFF176,
