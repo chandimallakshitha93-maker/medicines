@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="si">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Repair &amp; Condemn Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+Sinhala:wght@400;700&display=swap">
+<style>
+:root{--bg:#F4F6F8;--card:#fff;--ink:#16202A;--mut:#5F6B76;--line:#DDE3E8;--y:#FFD600;--r:#C62828;--g:#2E7D32;--b:#1565C0;--p:#6A1B9A;--br:#8D6E63;--acc:#0B5C52}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11161B;--card:#1B232B;--ink:#E8EDF1;--mut:#9AA6B1;--line:#2E3943}}
+:root[data-theme="dark"]{--bg:#11161B;--card:#1B232B;--ink:#E8EDF1;--mut:#9AA6B1;--line:#2E3943}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,"Noto Sans Sinhala","Iskoola Pota",sans-serif;font-size:15px}
+.si{font-family:"Noto Sans Sinhala","Iskoola Pota",sans-serif}
+header{background:var(--acc);color:#fff;padding:14px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+header h1{margin:0;font-size:20px;line-height:1.2}header h1 small{display:block;font-weight:400;font-size:13px;opacity:.85}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+button,.btn{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:600}
+button.pri{background:var(--acc);color:#fff;border-color:var(--acc)}button.warn{background:var(--r);color:#fff;border-color:var(--r)}button.ok{background:var(--g);color:#fff;border-color:var(--g)}
+header button{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.35)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;border-left:6px solid var(--mut)}
+.stat b{display:block;font-size:26px}.stat span{color:var(--mut);font-size:13px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+label{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+tr.row{cursor:pointer}tr.row:hover{background:rgba(127,127,127,.08)}
+.pill{display:inline-block;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700;white-space:nowrap}
+.py{background:var(--y);color:#111}.pr{background:var(--r);color:#fff}.pg{background:var(--g);color:#fff}.pc{background:#546E7A;color:#fff}
+.t1{border-left-color:var(--b)!important}.t2{border-left-color:var(--p)!important}.t3{border-left-color:var(--br)!important}
+.type{font-size:12px;font-weight:700}.ty1{color:var(--b)}.ty2{color:var(--p)}.ty3{color:var(--br)}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.step{display:grid;grid-template-columns:38px 1fr;gap:10px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.step .n{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;background:var(--line);color:var(--ink)}
+.step.done .n{background:var(--g);color:#fff}.step.cur .n{background:var(--acc);color:#fff;box-shadow:0 0 0 4px rgba(11,92,82,.2)}.step.dec .n{background:#EF6C00;color:#fff}
+.step h4{margin:0 0 2px;font-size:15px}.step .en{color:var(--mut);font-size:13px}
+.doc{display:inline-block;margin-top:5px;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:2px 8px;color:var(--mut)}
+.sf{display:grid;grid-template-columns:150px 1fr 1fr auto;gap:8px;margin-top:8px;align-items:end}
+@media(max-width:700px){.sf{grid-template-columns:1fr 1fr}.hidem{display:none}}
+.dec-b{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.note{font-size:13px;color:var(--mut)}
+.hide{display:none}
+.overdue{color:var(--r);font-weight:700}
+.badge{font-size:12px;color:var(--mut)}
+dialog{border:none;border-radius:14px;padding:0;max-width:720px;width:calc(100% - 32px);background:var(--card);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.dh{padding:14px 16px;background:var(--acc);color:#fff;font-weight:800}.db{padding:16px}.df{padding:12px 16px;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--line)}
+.typesel{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px}
+.typesel label{border:2px solid var(--line);border-radius:10px;padding:10px;cursor:pointer;color:var(--ink);font-size:14px}
+.typesel input{width:auto;margin-right:6px}.typesel label:has(input:checked){border-color:var(--acc);background:rgba(11,92,82,.08)}
+footer{text-align:center;color:var(--mut);font-size:12px;padding:20px}
+</style>
+</head>
+<body>
+<header>
+  <h1>අලුත්වැඩියා හා අවලංගු කිරීමේ පද්ධතිය<small>Repair &amp; Condemn Tracker · Divisional Hospital, Ganthuna</small></h1>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button onclick="openNew()">+ නව භාණ්ඩයක් · New item</button>
+    <button onclick="exportData()">⬇ Backup</button>
+    <button onclick="document.getElementById('imp').click()">⬆ Restore</button>
+    <input id="imp" type="file" accept=".json" class="hide" onchange="importData(this)">
+  </div>
+</header>
+
+<div class="wrap" id="listView">
+  <div class="stats" id="stats"></div>
+  <div class="tools">
+    <input id="q" placeholder="සොයන්න · Search item, inventory no., tag no." style="max-width:340px" oninput="render()">
+    <select id="fs" style="max-width:220px" onchange="render()">
+      <option value="open">විවෘත · Open cases</option>
+      <option value="yellow">කහ ටැග් · Under repair</option>
+      <option value="red">රතු ටැග් · Condemn in progress</option>
+      <option value="closed">වසා ඇත · Closed</option>
+      <option value="all">සියල්ල · All</option>
+    </select>
+    <button onclick="exportCSV()">⬇ Excel (CSV)</button>
+  </div>
+  <div class="card" style="padding:0;overflow-x:auto">
+    <table><thead><tr><th>Tag</th><th>භාණ්ඩය · Item</th><th class="hidem">Inv. no.</th><th class="hidem">ඒකකය · Unit</th><th>ඊළඟ පියවර · Next step</th><th>දින · Days</th></tr></thead><tbody id="rows"></tbody></table>
+    <p id="empty" class="note" style="padding:16px;margin:0">තවම භාණ්ඩ නැත. “+ New item” ඔබා පළමු දෝෂ සහිත භාණ්ඩය ඇතුළත් කරන්න. · No items yet — press “+ New item” to add the first faulty item.</p>
+  </div>
+  <p class="note">දත්ත මෙම පරිගණකයේ බ්‍රවුසරයේ පමණක් සුරැකේ. සතිපතා “Backup” කර USB / Drive එකක තබන්න. · Data is saved only in this computer's browser. Press “Backup” weekly and keep the file on a USB or Drive.</p>
+</div>
+
+<div class="wrap hide" id="caseView"></div>
+
+<dialog id="dlg">
+  <form method="dialog" id="nf">
+    <div class="dh">නව දෝෂ සහිත භාණ්ඩය · New faulty item</div>
+    <div class="db">
+      <label>භාණ්ඩයේ වර්ගය · Type</label>
+      <div class="typesel">
+        <label><input type="radio" name="type" value="1" required>ජෛව වෛද්‍ය නොවන උපකරණ<br><small>Non-biomedical items</small></label>
+        <label><input type="radio" name="type" value="2">ජෛව වෛද්‍ය උපකරණ<br><small>Biomedical equipment</small></label>
+        <label><input type="radio" name="type" value="3">ගොඩනැගිලි ද්‍රව්‍ය ඉවත් කිරීම<br><small>Removal of building materials</small></label>
+      </div>
+      <div class="grid" style="margin-top:12px">
+        <div><label>භාණ්ඩය · Item *</label><input name="item" required></div>
+        <div><label>ඉන්වෙන්ටරි අංකය · Inventory no.</label><input name="inv"></div>
+        <div><label>ඒකකය · Unit</label><input name="unit" list="units"></div>
+        <div><label>මාදිලිය / අනු අංකය · Model / Serial</label><input name="model"></div>
+        <div><label>ප්‍රමාණය · Qty</label><input name="qty" type="number" min="1" value="1"></div>
+        <div><label>වාර්තා කළ දිනය · Date reported</label><input name="date" type="date" required></div>
+      </div>
+      <div style="margin-top:12px"><label>දෝෂය · Fault / problem</label><textarea name="fault" rows="2"></textarea></div>
+      <datalist id="units"><option>OPD</option><option>ETU</option><option>Dispensary</option><option>Drug store</option><option>Dental</option><option>NCD / Suwadivi</option><option>MCH clinic</option><option>Laboratory</option><option>Office</option><option>Nursing room</option><option>DMO room</option><option>MO room</option><option>Record room</option><option>Maintenance unit</option><option>Store room</option><option>Kitchen</option></datalist>
+    </div>
+    <div class="df"><button value="cancel" formnovalidate>අවලංගු · Cancel</button><button class="pri" value="ok" id="saveNew">පියවර සාදන්න · Create steps</button></div>
+  </form>
+</dialog>
+
+<footer>5S · ප්‍රාදේශීය රෝහල, ගන්තුන · Divisional Hospital, Ganthuna</footer>
+
+<script>
+const KEY='dhg_repair_v1';
+const TYPES={1:['ජෛව වෛද්‍ය නොවන උපකරණ','Non-biomedical'],2:['ජෛව වෛද්‍ය උපකරණ','Biomedical'],3:['ගොඩනැගිලි ද්‍රව්‍ය','Building materials']};
+// step: [id, si, en, doc, kind]  kind: 'tagY' | 'tagR' | 'dec' | 'close' | ''
+const PATH={
+ 1:[['y','කහ ටැගය යොදන්න','Put yellow tag on the item','Yellow tag no.','tagY'],
+    ['lm','ප්‍රාදේශීය නඩත්තු ඒකකයට','Send to local maintenance unit','Maintenance request form',''],
+    ['rd','RDHS නඩත්තු ඉල්ලීම','RDHS maintenance request','Letter to RDHS',''],
+    ['d1','අලුත්වැඩියා කළාද?','Was it repaired?','','dec'],
+    ['mr','නඩත්තු ඒකක වාර්තාව','Maintenance unit report (cannot repair)','Maintenance report',''],
+    ['p47','පොදු 47 + නඩත්තු කමිටු වාර්තාව','Fill Podu 47 + maintenance committee report','Podu 47 + committee report','']],
+ 2:[['y','කහ ටැගය යොදන්න','Put yellow tag on the item','Yellow tag no.','tagY'],
+    ['lt','ජෛව වෛද්‍ය ඒකකයට ලිපිය','Letter to Biomedical unit (via RDHS + direct advance copy)','Letter + advance copy',''],
+    ['bu','ජෛව වෛද්‍ය අලුත්වැඩියා ඒකකය','Biomedical repair unit inspects','Job / visit date',''],
+    ['d1','අලුත්වැඩියා කළාද?','Was it repaired?','','dec'],
+    ['br','ජෛව වෛද්‍ය වාර්තාව','Biomedical report (cannot repair)','Biomedical report','']],
+ 3:[['y','කහ ටැගය යොදන්න','Put yellow tag on the item','Yellow tag no.','tagY'],
+    ['p47','පොදු 47 → RDHS','Podu 47 sent to RDHS','Podu 47 form','']]
+};
+const REPAIRED=[['ry','කහ ටැගය ඉවත් කර භාවිතයට','Remove yellow tag, back to use, update record','Update record','close']];
+const CONDEMN=[['r','රතු ටැගය · රතු ටැග් ප්‍රදේශයට','Change to red tag, move to red tag area','Red tag no.','tagR'],
+  ['cb','අවලංගු කිරීමේ මණ්ඩලය පරීක්ෂා කිරීම','Condemn board inspects','Board report',''],
+  ['ap','RDHS අනුමැතිය','RDHS approval','Approval letter',''],
+  ['sd','විකිණීම හෝ විනාශ කිරීම','Sell or destroy','Receipt / Destruction record',''],
+  ['inv','ඉන්වෙන්ටරියෙන් ඉවත් කිරීම','Remove from inventory register','Approval no. + date','close']];
+
+let DB=load();
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{cases:[],ny:0,nr:0}}catch(e){return {cases:[],ny:0,nr:0}}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){alert('Could not save in this browser. Please use Backup.')}}
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const today=()=>new Date().toISOString().slice(0,10);
+const days=(a,b)=>Math.max(0,Math.round(((b?new Date(b):new Date())-new Date(a))/864e5));
+const yr=()=>new Date().getFullYear();
+
+function stepsOf(c){
+  let s=PATH[c.type].map(x=>x.slice());
+  if(c.type==3) return s.concat(CONDEMN);
+  if(c.outcome==='repaired'){const i=s.findIndex(x=>x[4]==='dec');return s.slice(0,i+1).concat(REPAIRED)}
+  if(c.outcome==='condemn') return s.concat(CONDEMN);
+  return s;
+}
+function state(c){
+  const S=stepsOf(c);let cur=S.findIndex(x=>!(c.done[x[0]]&&c.done[x[0]].ok));
+  const closed=cur===-1&&(c.type==3||c.outcome);
+  const red=!!(c.done.r&&c.done.r.ok);
+  return {S,cur,closed,red,status:closed?'closed':red?'red':'yellow'};
+}
+function render(){
+  const q=$('#q').value.toLowerCase(),f=$('#fs').value;let n={open:0,yellow:0,red:0,closed:0,over:0};
+  const rows=[];
+  DB.cases.slice().sort((a,b)=>b.created-a.created).forEach(c=>{
+    const st=state(c);n[st.status]++;if(st.status!=='closed')n.open++;
+    const rd=c.done.r&&c.done.r.date?days(c.done.r.date):0;const over=st.status==='red'&&rd>28;if(over)n.over++;
+    const hay=[c.item,c.inv,c.unit,c.ytag,c.rtag,c.model].join(' ').toLowerCase();
+    if(q&&!hay.includes(q))return;
+    if(f==='open'&&st.status==='closed')return;if(['yellow','red','closed'].includes(f)&&st.status!==f)return;
+    const nx=st.closed?(c.outcome==='repaired'?'අලුත්වැඩියා කළා · Repaired':'අවලංගු කර ඉවත් කළා · Condemned & removed'):(st.S[st.cur][4]==='dec'?'තීරණය · Decide: repaired?':st.S[st.cur][1]+' · '+st.S[st.cur][2]);
+    const pill=st.status==='closed'?`<span class="pill ${c.outcome==='repaired'?'pg':'pc'}">${c.outcome==='repaired'?'OK':'Closed'}</span>`:st.red?`<span class="pill pr">${esc(c.rtag||'RED')}</span>`:`<span class="pill py">${esc(c.ytag||'YELLOW')}</span>`;
+    rows.push(`<tr class="row" onclick="openCase('${c.id}')"><td>${pill}</td><td><b>${esc(c.item)}</b><div class="type ty${c.type}">${TYPES[c.type][1]}</div></td><td class="hidem">${esc(c.inv)}</td><td class="hidem">${esc(c.unit)}</td><td>${esc(nx)}${over?'<div class="overdue">රතු ටැග් ප්‍රදේශයේ සති 4+ · 4+ weeks in red tag area</div>':''}</td><td>${st.closed?'—':days(c.date)}</td></tr>`);
+  });
+  $('#rows').innerHTML=rows.join('');$('#empty').style.display=DB.cases.length?'none':'block';
+  $('#stats').innerHTML=`<div class="stat"><b>${n.open}</b><span>විවෘත · Open</span></div><div class="stat" style="border-left-color:var(--y)"><b>${n.yellow}</b><span>කහ ටැග් · Under repair</span></div><div class="stat" style="border-left-color:var(--r)"><b>${n.red}</b><span>රතු ටැග් · Condemn in progress</span></div><div class="stat" style="border-left-color:var(--g)"><b>${n.closed}</b><span>වසා ඇත · Closed</span></div>${n.over?`<div class="stat" style="border-left-color:var(--r)"><b class="overdue">${n.over}</b><span>සති 4+ රතු ටැග් · Overdue</span></div>`:''}`;
+}
+function openNew(){const f=$('#nf');f.reset();f.date.value=today();$('#dlg').showModal()}
+$('#nf').addEventListener('submit',e=>{
+  if(e.submitter&&e.submitter.value!=='ok')return;
+  const f=e.target,c={id:'c'+Date.now(),created:Date.now(),type:+f.type.value,item:f.item.value.trim(),inv:f.inv.value.trim(),unit:f.unit.value.trim(),model:f.model.value.trim(),qty:f.qty.value,date:f.date.value,fault:f.fault.value.trim(),done:{},outcome:null};
+  DB.ny++;c.ytag=`Y-${yr()}-${String(DB.ny).padStart(3,'0')}`;
+  DB.cases.push(c);save();render();setTimeout(()=>openCase(c.id),50);
+});
+function find(id){return DB.cases.find(c=>c.id===id)}
+function openCase(id){
+  const c=find(id),st=state(c);
+  const head=`<div class="tools"><button onclick="back()">← ලැයිස්තුවට · Back</button><button onclick="printTag('${id}')">🖨 ${st.red?'රතු':'කහ'} ටැගය · Print ${st.red?'red':'yellow'} tag</button><button onclick="printCase('${id}')">🖨 පියවර පත්‍රය · Print case sheet</button><button class="warn" onclick="delCase('${id}')" style="margin-left:auto">මකන්න · Delete</button></div>
+  <div class="card t${c.type}" style="border-left:6px solid"><div class="type ty${c.type}">${TYPES[c.type][0]} · ${TYPES[c.type][1]}</div><h2 style="margin:4px 0">${esc(c.item)} ${c.qty>1?'× '+esc(c.qty):''}</h2>
+  <div class="grid note"><div>Inv. no: <b>${esc(c.inv||'—')}</b></div><div>ඒකකය · Unit: <b>${esc(c.unit||'—')}</b></div><div>Model / Serial: <b>${esc(c.model||'—')}</b></div><div>වාර්තා කළ දිනය · Reported: <b>${esc(c.date)}</b> (${days(c.date)} days)</div></div>
+  ${c.fault?`<p style="margin:8px 0 0">දෝෂය · Fault: ${esc(c.fault)}</p>`:''}
+  <p style="margin:8px 0 0"><span class="pill py">${esc(c.ytag)}</span> ${c.rtag?`<span class="pill pr">${esc(c.rtag)}</span>`:''}</p></div>`;
+  const li=st.S.map((s,i)=>{
+    const d=c.done[s[0]]||{},done=!!d.ok,cur=i===st.cur;
+    let body='';
+    if(s[4]==='dec'){
+      body=done?`<div class="note">${c.outcome==='repaired'?'✅ අලුත්වැඩියා කළා · Repaired':'❌ අලුත්වැඩියා කළ නොහැක · Cannot repair → condemn'} · ${esc(d.date||'')} <button onclick="undoDec('${id}')">වෙනස් කරන්න · Change</button></div>`
+        :cur?`<div class="dec-b"><button class="ok" onclick="decide('${id}','repaired')">✅ ඔව්, අලුත්වැඩියා කළා · Yes, repaired</button><button class="warn" onclick="decide('${id}','condemn')">❌ නැත · Cannot repair</button></div>`:'';
+    }else{
+      const ref=s[4]==='tagY'?(d.ref||c.ytag):s[4]==='tagR'?(d.ref||c.rtag||nextR(true)):(d.ref||'');
+      body=`<div class="sf"><div><label>දිනය · Date</label><input type="date" id="d_${s[0]}" value="${esc(d.date||'')}"${done?' disabled':''}></div>
+      <div><label>${esc(s[3]||'Ref no.')}</label><input id="r_${s[0]}" value="${esc(ref)}"${done?' disabled':''}></div>
+      <div><label>සටහන · Note</label><input id="n_${s[0]}" value="${esc(d.note||'')}"${done?' disabled':''}></div>
+      <div>${done?`<button onclick="undo('${id}','${s[0]}')">↺</button>`:`<button class="pri" ${cur?'':'disabled'} onclick="mark('${id}','${s[0]}')">✔ නිම කළා · Done</button>`}</div></div>`;
+    }
+    return `<li class="step ${done?'done':''} ${cur?(s[4]==='dec'?'dec':'cur'):''}"><div class="n">${done?'✓':i+1}</div><div><h4 class="si">${esc(s[1])}</h4><div class="en">${esc(s[2])}</div>${s[3]&&s[4]!=='dec'?`<span class="doc">📄 ${esc(s[3])}</span>`:''}${body}</div></li>`;
+  }).join('');
+  const end=st.closed?`<div class="card" style="border-color:var(--g)"><b>✅ ${c.outcome==='repaired'?'අලුත්වැඩියා කර භාවිතයට · Repaired and back in use':'අවලංගු කර ඉන්වෙන්ටරියෙන් ඉවත් කළා · Condemned and removed from inventory'}</b></div>`:(c.outcome||c.type==3?'':`<p class="note">“අලුත්වැඩියා කළාද?” පියවරේදී පිළිතුර අනුව ඉතිරි පියවර ස්වයංක්‍රීයව එකතු වේ. · The remaining steps appear after you answer “Was it repaired?”.</p>`);
+  $('#caseView').innerHTML=head+`<div class="card"><h3 style="margin-top:0">පියවර · Steps</h3><ol class="steps">${li}</ol>${end}</div>`;
+  $('#listView').classList.add('hide');$('#caseView').classList.remove('hide');window.scrollTo(0,0);
+}
+function nextR(peek){const n=DB.nr+1;const t=`R-${yr()}-${String(n).padStart(3,'0')}`;if(!peek)DB.nr=n;return t}
+function mark(id,sid){const c=find(id);const s=stepsOf(c).find(x=>x[0]===sid);
+  const date=$('#d_'+sid).value||today(),ref=$('#r_'+sid).value.trim(),note=$('#n_'+sid).value.trim();
+  if(s[4]==='tagR'&&!c.rtag){c.rtag=ref&&ref!==nextR(true)?ref:nextR(false)}
+  if(s[4]==='tagY'&&ref)c.ytag=ref;
+  c.done[sid]={ok:true,date,ref:s[4]==='tagR'?c.rtag:ref,note};save();openCase(id)}
+function undo(id,sid){const c=find(id);delete c.done[sid].ok;save();openCase(id)}
+function decide(id,o){const c=find(id);c.outcome=o;c.done.d1={ok:true,date:today()};save();openCase(id)}
+function undoDec(id){const c=find(id);if(!confirm('Change the repair decision? Later steps will be hidden.'))return;c.outcome=null;delete c.done.d1;save();openCase(id)}
+function delCase(id){if(!confirm('Delete this item permanently?'))return;DB.cases=DB.cases.filter(c=>c.id!==id);save();back()}
+function back(){$('#caseView').classList.add('hide');$('#listView').classList.remove('hide');render()}
+function exportData(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(DB,null,1)],{type:'application/json'}));a.download=`repair_backup_${today()}.json`;a.click()}
+function importData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.cases)throw 0;if(!confirm(`Restore ${d.cases.length} items? This replaces the data on this computer.`))return;DB=d;save();render()}catch(e){alert('Not a valid backup file')}};r.readAsText(f);inp.value=''}
+function exportCSV(){const h=['Yellow tag','Red tag','Type','Item','Qty','Inventory no','Unit','Model/Serial','Fault','Date reported','Status','Next step','Days open'];
+  const L=[h].concat(DB.cases.map(c=>{const st=state(c);return [c.ytag,c.rtag||'',TYPES[c.type][1],c.item,c.qty,c.inv,c.unit,c.model,c.fault,c.date,st.closed?(c.outcome==='repaired'?'Repaired':'Condemned'):st.status==='red'?'Red tag':'Yellow tag',st.closed?'':st.S[st.cur][2],st.closed?'':days(c.date)]}));
+  const csv='﻿'+L.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=`repair_list_${today()}.csv`;a.click()}
+function pw(html){const w=window.open('','_blank');w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Print</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&family=Noto+Sans+Sinhala:wght@400;700&display=swap"><style>@page{size:A4;margin:12mm}body{font-family:Inter,"Noto Sans Sinhala","Iskoola Pota",sans-serif;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact}table{width:100%;border-collapse:collapse}td,th{border:1px solid #999;padding:6px;text-align:left;font-size:12px;vertical-align:top}.tag{width:75mm;height:135mm;border:2px solid #111;border-radius:6mm 6mm 2mm 2mm;overflow:hidden;position:relative;font-size:11px}.th{padding:10mm 3mm 2mm;font-weight:800}.th b{display:block;font-size:20px}.hole{position:absolute;top:2.5mm;left:50%;margin-left:-3mm;width:6mm;height:6mm;border:2px solid #111;border-radius:50%;background:#fff}.f{padding:1.2mm 3mm;border-bottom:1px dotted #999}.f small{display:block;color:#555;font-size:9px}</style></head><body>${html}<script>setTimeout(()=>print(),600)<\/script></body></html>`);w.document.close()}
+function printTag(id){const c=find(id),st=state(c),red=st.red,bg=red?'#C62828':'#FFD600',fg=red?'#fff':'#111';
+  const F=(a,b)=>`<div class="f"><small>${a}</small>${esc(b)||'&nbsp;'}</div>`;
+  pw(`<div class="tag"><div class="hole"></div><div class="th" style="background:${bg};color:${fg}">${red?'රතු ටැගය':'කහ ටැගය'}<b>${red?'5S RED TAG · CONDEMN':'5S YELLOW TAG · UNDER REPAIR'}</b></div><div style="background:#111;color:#fff;text-align:center;padding:1mm;font-weight:700">${red?'බැහැර කිරීමට · FOR DISPOSAL':'භාවිතා නොකරන්න · DO NOT USE'}</div>
+  ${F('ටැග් අංකය · Tag no.',red?c.rtag:c.ytag)}${F('භාණ්ඩය · Item',c.item+(c.qty>1?' × '+c.qty:''))}${F('ඉන්වෙන්ටරි අංකය · Inv. no.',c.inv)}${F('ඒකකය · Unit',c.unit)}${F('මාදිලිය / අනු අංකය · Model / Serial',c.model)}${F('දෝෂය · Fault',c.fault)}${F('වාර්තා කළ දිනය · Date reported',c.date)}${red?F('රතු ටැග් දිනය · Red tag date',(c.done.r||{}).date)+F('අනුමැති අංකය · Approval no.',''):F('ඉල්ලීම් / ලිපි අංකය · Request / Letter no.',((c.done.lm||c.done.lt||c.done.p47||{}).ref)||'')}
+  <div style="position:absolute;bottom:0;left:0;right:0;background:${bg};color:${fg};text-align:center;padding:1.5mm;font-weight:700;font-size:10px">ප්‍රාදේශීය රෝහල, ගන්තුන · DH Ganthuna</div></div>`)}
+function printCase(id){const c=find(id),st=state(c);
+  const rows=st.S.map((s,i)=>{const d=c.done[s[0]]||{};return `<tr><td>${i+1}</td><td><b>${esc(s[1])}</b><br>${esc(s[2])}</td><td>${esc(s[4]==='dec'?(c.outcome==='repaired'?'Repaired':c.outcome==='condemn'?'Cannot repair':''):s[3])}</td><td>${esc(d.ref||'')}</td><td>${esc(d.date||'')}</td><td>${d.ok?'✔':''}</td><td>${esc(d.note||'')}</td></tr>`}).join('');
+  pw(`<h2 style="margin:0">අලුත්වැඩියා / අවලංගු කිරීමේ පත්‍රය · Repair / Condemn Case Sheet</h2><p style="margin:4px 0 10px">ප්‍රාදේශීය රෝහල, ගන්තුන · Divisional Hospital, Ganthuna</p>
+  <table><tr><th>Tag</th><td>${esc(c.ytag)} ${esc(c.rtag||'')}</td><th>Type</th><td>${TYPES[c.type][1]}</td></tr><tr><th>Item</th><td>${esc(c.item)} ${c.qty>1?'× '+esc(c.qty):''}</td><th>Inv. no.</th><td>${esc(c.inv)}</td></tr><tr><th>Unit</th><td>${esc(c.unit)}</td><th>Model / Serial</th><td>${esc(c.model)}</td></tr><tr><th>Fault</th><td colspan="3">${esc(c.fault)}</td></tr><tr><th>Reported</th><td>${esc(c.date)}</td><th>Days</th><td>${days(c.date)}</td></tr></table><br>
+  <table><tr><th>#</th><th>Step</th><th>Document</th><th>Ref. no.</th><th>Date</th><th>Done</th><th>Note</th></tr>${rows}</table><br><br><p>.................................................<br>වෛද්‍ය නිලධාරී භාරව · Medical Officer in charge</p>`)}
+render();
+</script>
+</body>
+</html>
