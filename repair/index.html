@@ -137,11 +137,11 @@ const REPAIRED=[['ry','කහ ටැගය ඉවත් කර භාවිත�
 const CONDEMN=[['r','රතු ටැගය · රතු ටැග් ප්‍රදේශයට','Change to red tag, move to red tag area','Red tag no.','tagR'],
   ['cb','අපහරණ කමිටුව පරීක්ෂා කිරීම','Condemn committee inspects','Committee report',''],
   ['d2','අපහරණ කමිටු තීරණය','Committee decision: R / T / S / D','','dec2']];
-const DECS={R:['අලුත්වැඩියාව','Repair','#EF6C00'],T:['මාරු කිරීම','Transfer','#1565C0'],S:['විකිණීම','Sale','#2E7D32'],D:['විනාශ කිරීම','Destroy','#424242']};
+const DECS={R:['අලුත්වැඩියාව','Repair','#EF6C00'],T:['මාරු කිරීම','Transfer','#1565C0'],S:['විකිණීම','Sale','#2E7D32'],D:['එම ස්ථානයේදීම විනාශය','Destroy on the spot','#424242']};
 const AFTER={R:[['rr','තීරණය R · අලුත්වැඩියාවට යැවීම','Decision R – send for repair as decided','Repair ref. no.','close']],
   T:[['ap','RDHS අනුමැතිය','RDHS approval','Approval letter',''],['tt','මාරු කිරීම','Transfer to the decided unit / institution','Transfer note',''],['inv','ඉන්වෙන්ටරියෙන් ඉවත් කිරීම','Remove from inventory register','Approval no. + date','close']],
   S:[['ap','RDHS අනුමැතිය','RDHS approval','Approval letter',''],['ss','විකිණීම','Sale','Receipt no.',''],['inv','ඉන්වෙන්ටරියෙන් ඉවත් කිරීම','Remove from inventory register','Approval no. + date','close']],
-  D:[['ap','RDHS අනුමැතිය','RDHS approval','Approval letter',''],['dd','විනාශ කිරීම','Destroy','Destruction record',''],['inv','ඉන්වෙන්ටරියෙන් ඉවත් කිරීම','Remove from inventory register','Approval no. + date','close']]};
+  D:[['dd','එම ස්ථානයේදීම විනාශ කිරීම','Destroy on the spot (no further approval needed)','Destruction record',''],['inv','ඉන්වෙන්ටරියෙන් ඉවත් කිරීම','Remove from inventory register','Approval no. + date','close']]};
 function condemn(c){return CONDEMN.concat(c.decision?AFTER[c.decision]:[])}
 
 let DB=load();
