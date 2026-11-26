@@ -1,4 +1,5 @@
 ﻿Item,Area,Place,Code,Category,Note,PaperColour,InventoryNo
+"Wall fan (බිත්ති විදුලි පංකාව)",Office,"Office · on the wall",OFF-FAN,OFFICE EQUIPMENT,,#FFFFFF,
 "Incoming letters (ලැබෙන ලිපි)",Office,"Office Table 09 · File holder 01 · Book 01",T9-H1-01,OFFICE TABLE 09 FILE HOLDERS,,#FFFFFF,
 "Letter distribution register (ලිපි බෙදා හැරීමේ ලේඛනය)",Office,"Office Table 09 · File holder 01 · Book 02",T9-H1-02,OFFICE TABLE 09 FILE HOLDERS,,#FFFFFF,
 "Oxygen refilling register (ඔක්සිජන් පිරවුම් ලේඛනය)",Office,"Office Table 09 · File holder 01 · Book 03",T9-H1-03,OFFICE TABLE 09 FILE HOLDERS,,#FFFFFF,
