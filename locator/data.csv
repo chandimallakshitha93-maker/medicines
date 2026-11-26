@@ -1,4 +1,5 @@
 ﻿Item,Area,Place,Code,Category,Note,PaperColour,InventoryNo
+"Crowbar (අලවංගුව)",Maintenance Unit,"Maintenance unit · Rack 1 · Level 2",MU-R1-L2,MAINTENANCE TOOLS,,,
 "Wall fan (බිත්ති විදුලි පංකාව)",Office,"Office · on the wall",OFF-FAN,OFFICE EQUIPMENT,,#FFFFFF,
 "Incoming letters (ලැබෙන ලිපි)",Office,"Office Table 09 · File holder 01 · Book 01",T9-H1-01,OFFICE TABLE 09 FILE HOLDERS,,#FFFFFF,
 "Letter distribution register (ලිපි බෙදා හැරීමේ ලේඛනය)",Office,"Office Table 09 · File holder 01 · Book 02",T9-H1-02,OFFICE TABLE 09 FILE HOLDERS,,#FFFFFF,
