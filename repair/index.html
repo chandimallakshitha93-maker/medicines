@@ -56,7 +56,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:20px}
 </head>
 <body>
 <header>
-  <h1>අලුත්වැඩියා හා අවලංගු කිරීමේ පද්ධතිය<small>Repair &amp; Condemn Tracker · Divisional Hospital, Ganthuna</small></h1>
+  <h1>අලුත්වැඩියා හා අපහරණ පද්ධතිය<small>Repair &amp; Condemn Tracker · Divisional Hospital, Ganthuna</small></h1>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
     <button onclick="openNew()">+ නව භාණ්ඩයක් · New item</button>
     <button onclick="exportData()">⬇ Backup</button>
@@ -72,7 +72,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:20px}
     <select id="fs" style="max-width:220px" onchange="render()">
       <option value="open">විවෘත · Open cases</option>
       <option value="yellow">කහ ටැග් · Under repair</option>
-      <option value="red">රතු ටැග් · Condemn in progress</option>
+      <option value="red">රතු ටැග් · අපහරණය · Condemn in progress</option>
       <option value="closed">වසා ඇත · Closed</option>
       <option value="all">සියල්ල · All</option>
     </select>
@@ -135,10 +135,14 @@ const PATH={
 };
 const REPAIRED=[['ry','කහ ටැගය ඉවත් කර භාවිතයට','Remove yellow tag, back to use, update record','Update record','close']];
 const CONDEMN=[['r','රතු ටැගය · රතු ටැග් ප්‍රදේශයට','Change to red tag, move to red tag area','Red tag no.','tagR'],
-  ['cb','අවලංගු කිරීමේ මණ්ඩලය පරීක්ෂා කිරීම','Condemn board inspects','Board report',''],
-  ['ap','RDHS අනුමැතිය','RDHS approval','Approval letter',''],
-  ['sd','විකිණීම හෝ විනාශ කිරීම','Sell or destroy','Receipt / Destruction record',''],
-  ['inv','ඉන්වෙන්ටරියෙන් ඉවත් කිරීම','Remove from inventory register','Approval no. + date','close']];
+  ['cb','අපහරණ කමිටුව පරීක්ෂා කිරීම','Condemn committee inspects','Committee report',''],
+  ['d2','අපහරණ කමිටු තීරණය','Committee decision: R / T / S / D','','dec2']];
+const DECS={R:['අලුත්වැඩියාව','Repair','#EF6C00'],T:['මාරු කිරීම','Transfer','#1565C0'],S:['විකිණීම','Sale','#2E7D32'],D:['විනාශ කිරීම','Destroy','#424242']};
+const AFTER={R:[['rr','තීරණය R · අලුත්වැඩියාවට යැවීම','Decision R – send for repair as decided','Repair ref. no.','close']],
+  T:[['ap','RDHS අනුමැතිය','RDHS approval','Approval letter',''],['tt','මාරු කිරීම','Transfer to the decided unit / institution','Transfer note',''],['inv','ඉන්වෙන්ටරියෙන් ඉවත් කිරීම','Remove from inventory register','Approval no. + date','close']],
+  S:[['ap','RDHS අනුමැතිය','RDHS approval','Approval letter',''],['ss','විකිණීම','Sale','Receipt no.',''],['inv','ඉන්වෙන්ටරියෙන් ඉවත් කිරීම','Remove from inventory register','Approval no. + date','close']],
+  D:[['ap','RDHS අනුමැතිය','RDHS approval','Approval letter',''],['dd','විනාශ කිරීම','Destroy','Destruction record',''],['inv','ඉන්වෙන්ටරියෙන් ඉවත් කිරීම','Remove from inventory register','Approval no. + date','close']]};
+function condemn(c){return CONDEMN.concat(c.decision?AFTER[c.decision]:[])}
 
 let DB=load();
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{cases:[],ny:0,nr:0}}catch(e){return {cases:[],ny:0,nr:0}}}
@@ -151,11 +155,12 @@ const yr=()=>new Date().getFullYear();
 
 function stepsOf(c){
   let s=PATH[c.type].map(x=>x.slice());
-  if(c.type==3) return s.concat(CONDEMN);
+  if(c.type==3) return s.concat(condemn(c));
   if(c.outcome==='repaired'){const i=s.findIndex(x=>x[4]==='dec');return s.slice(0,i+1).concat(REPAIRED)}
-  if(c.outcome==='condemn') return s.concat(CONDEMN);
+  if(c.outcome==='condemn') return s.concat(condemn(c));
   return s;
 }
+function endText(c){if(c.outcome==='repaired')return 'අලුත්වැඩියා කළා · Repaired';const d=DECS[c.decision]||['',''];return `අපහරණය: ${c.decision} ${d[0]} · Condemn decision ${c.decision} – ${d[1]}`}
 function state(c){
   const S=stepsOf(c);let cur=S.findIndex(x=>!(c.done[x[0]]&&c.done[x[0]].ok));
   const closed=cur===-1&&(c.type==3||c.outcome);
@@ -171,7 +176,7 @@ function render(){
     const hay=[c.item,c.inv,c.unit,c.ytag,c.rtag,c.model].join(' ').toLowerCase();
     if(q&&!hay.includes(q))return;
     if(f==='open'&&st.status==='closed')return;if(['yellow','red','closed'].includes(f)&&st.status!==f)return;
-    const nx=st.closed?(c.outcome==='repaired'?'අලුත්වැඩියා කළා · Repaired':'අවලංගු කර ඉවත් කළා · Condemned & removed'):(st.S[st.cur][4]==='dec'?'තීරණය · Decide: repaired?':st.S[st.cur][1]+' · '+st.S[st.cur][2]);
+    const k=st.closed?'':st.S[st.cur][4];const nx=st.closed?endText(c):(k==='dec'?'තීරණය · Decide: repaired?':k==='dec2'?'කමිටු තීරණය · Committee decision R/T/S/D':st.S[st.cur][1]+' · '+st.S[st.cur][2]);
     const pill=st.status==='closed'?`<span class="pill ${c.outcome==='repaired'?'pg':'pc'}">${c.outcome==='repaired'?'OK':'Closed'}</span>`:st.red?`<span class="pill pr">${esc(c.rtag||'RED')}</span>`:`<span class="pill py">${esc(c.ytag||'YELLOW')}</span>`;
     rows.push(`<tr class="row" onclick="openCase('${c.id}')"><td>${pill}</td><td><b>${esc(c.item)}</b><div class="type ty${c.type}">${TYPES[c.type][1]}</div></td><td class="hidem">${esc(c.inv)}</td><td class="hidem">${esc(c.unit)}</td><td>${esc(nx)}${over?'<div class="overdue">රතු ටැග් ප්‍රදේශයේ සති 4+ · 4+ weeks in red tag area</div>':''}</td><td>${st.closed?'—':days(c.date)}</td></tr>`);
   });
@@ -199,6 +204,9 @@ function openCase(id){
     if(s[4]==='dec'){
       body=done?`<div class="note">${c.outcome==='repaired'?'✅ අලුත්වැඩියා කළා · Repaired':'❌ අලුත්වැඩියා කළ නොහැක · Cannot repair → condemn'} · ${esc(d.date||'')} <button onclick="undoDec('${id}')">වෙනස් කරන්න · Change</button></div>`
         :cur?`<div class="dec-b"><button class="ok" onclick="decide('${id}','repaired')">✅ ඔව්, අලුත්වැඩියා කළා · Yes, repaired</button><button class="warn" onclick="decide('${id}','condemn')">❌ නැත · Cannot repair</button></div>`:'';
+    }else if(s[4]==='dec2'){
+      body=done?`<div class="note"><span class="pill" style="background:${DECS[c.decision][2]};color:#fff">${c.decision}</span> ${DECS[c.decision][0]} · ${DECS[c.decision][1]} · ${esc(d.date||'')} <button onclick="undoDec2('${id}')">වෙනස් කරන්න · Change</button></div>`
+        :cur?`<div class="dec-b">${Object.entries(DECS).map(([k,v])=>`<button style="background:${v[2]};color:#fff;border-color:${v[2]}" onclick="decide2('${id}','${k}')"><b>${k}</b> · ${v[0]} · ${v[1]}</button>`).join('')}</div>`:'';
     }else{
       const ref=s[4]==='tagY'?(d.ref||c.ytag):s[4]==='tagR'?(d.ref||c.rtag||nextR(true)):(d.ref||'');
       body=`<div class="sf"><div><label>දිනය · Date</label><input type="date" id="d_${s[0]}" value="${esc(d.date||'')}"${done?' disabled':''}></div>
@@ -206,9 +214,9 @@ function openCase(id){
       <div><label>සටහන · Note</label><input id="n_${s[0]}" value="${esc(d.note||'')}"${done?' disabled':''}></div>
       <div>${done?`<button onclick="undo('${id}','${s[0]}')">↺</button>`:`<button class="pri" ${cur?'':'disabled'} onclick="mark('${id}','${s[0]}')">✔ නිම කළා · Done</button>`}</div></div>`;
     }
-    return `<li class="step ${done?'done':''} ${cur?(s[4]==='dec'?'dec':'cur'):''}"><div class="n">${done?'✓':i+1}</div><div><h4 class="si">${esc(s[1])}</h4><div class="en">${esc(s[2])}</div>${s[3]&&s[4]!=='dec'?`<span class="doc">📄 ${esc(s[3])}</span>`:''}${body}</div></li>`;
+    return `<li class="step ${done?'done':''} ${cur?(s[4].startsWith('dec')?'dec':'cur'):''}"><div class="n">${done?'✓':i+1}</div><div><h4 class="si">${esc(s[1])}</h4><div class="en">${esc(s[2])}</div>${s[3]&&!s[4].startsWith('dec')?`<span class="doc">📄 ${esc(s[3])}</span>`:''}${body}</div></li>`;
   }).join('');
-  const end=st.closed?`<div class="card" style="border-color:var(--g)"><b>✅ ${c.outcome==='repaired'?'අලුත්වැඩියා කර භාවිතයට · Repaired and back in use':'අවලංගු කර ඉන්වෙන්ටරියෙන් ඉවත් කළා · Condemned and removed from inventory'}</b></div>`:(c.outcome||c.type==3?'':`<p class="note">“අලුත්වැඩියා කළාද?” පියවරේදී පිළිතුර අනුව ඉතිරි පියවර ස්වයංක්‍රීයව එකතු වේ. · The remaining steps appear after you answer “Was it repaired?”.</p>`);
+  const end=st.closed?`<div class="card" style="border-color:var(--g)"><b>✅ ${esc(endText(c))}</b></div>`:(c.outcome||c.type==3?'':`<p class="note">“අලුත්වැඩියා කළාද?” පියවරේදී පිළිතුර අනුව ඉතිරි පියවර ස්වයංක්‍රීයව එකතු වේ. · The remaining steps appear after you answer “Was it repaired?”.</p>`);
   $('#caseView').innerHTML=head+`<div class="card"><h3 style="margin-top:0">පියවර · Steps</h3><ol class="steps">${li}</ol>${end}</div>`;
   $('#listView').classList.add('hide');$('#caseView').classList.remove('hide');window.scrollTo(0,0);
 }
@@ -220,13 +228,15 @@ function mark(id,sid){const c=find(id);const s=stepsOf(c).find(x=>x[0]===sid);
   c.done[sid]={ok:true,date,ref:s[4]==='tagR'?c.rtag:ref,note};save();openCase(id)}
 function undo(id,sid){const c=find(id);delete c.done[sid].ok;save();openCase(id)}
 function decide(id,o){const c=find(id);c.outcome=o;c.done.d1={ok:true,date:today()};save();openCase(id)}
+function decide2(id,k){const c=find(id);c.decision=k;c.done.d2={ok:true,date:today()};save();openCase(id)}
+function undoDec2(id){const c=find(id);if(!confirm('Change the committee decision?'))return;c.decision=null;delete c.done.d2;save();openCase(id)}
 function undoDec(id){const c=find(id);if(!confirm('Change the repair decision? Later steps will be hidden.'))return;c.outcome=null;delete c.done.d1;save();openCase(id)}
 function delCase(id){if(!confirm('Delete this item permanently?'))return;DB.cases=DB.cases.filter(c=>c.id!==id);save();back()}
 function back(){$('#caseView').classList.add('hide');$('#listView').classList.remove('hide');render()}
 function exportData(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(DB,null,1)],{type:'application/json'}));a.download=`repair_backup_${today()}.json`;a.click()}
 function importData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.cases)throw 0;if(!confirm(`Restore ${d.cases.length} items? This replaces the data on this computer.`))return;DB=d;save();render()}catch(e){alert('Not a valid backup file')}};r.readAsText(f);inp.value=''}
 function exportCSV(){const h=['Yellow tag','Red tag','Type','Item','Qty','Inventory no','Unit','Model/Serial','Fault','Date reported','Status','Next step','Days open'];
-  const L=[h].concat(DB.cases.map(c=>{const st=state(c);return [c.ytag,c.rtag||'',TYPES[c.type][1],c.item,c.qty,c.inv,c.unit,c.model,c.fault,c.date,st.closed?(c.outcome==='repaired'?'Repaired':'Condemned'):st.status==='red'?'Red tag':'Yellow tag',st.closed?'':st.S[st.cur][2],st.closed?'':days(c.date)]}));
+  const L=[h].concat(DB.cases.map(c=>{const st=state(c);return [c.ytag,c.rtag||'',TYPES[c.type][1],c.item,c.qty,c.inv,c.unit,c.model,c.fault,c.date,st.closed?endText(c):st.status==='red'?'Red tag':'Yellow tag',st.closed?'':st.S[st.cur][2],st.closed?'':days(c.date)]}));
   const csv='﻿'+L.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\r\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=`repair_list_${today()}.csv`;a.click()}
 function pw(html){const w=window.open('','_blank');w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Print</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&family=Noto+Sans+Sinhala:wght@400;700&display=swap"><style>@page{size:A4;margin:12mm}body{font-family:Inter,"Noto Sans Sinhala","Iskoola Pota",sans-serif;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact}table{width:100%;border-collapse:collapse}td,th{border:1px solid #999;padding:6px;text-align:left;font-size:12px;vertical-align:top}.tag{width:75mm;height:135mm;border:2px solid #111;border-radius:6mm 6mm 2mm 2mm;overflow:hidden;position:relative;font-size:11px}.th{padding:10mm 3mm 2mm;font-weight:800}.th b{display:block;font-size:20px}.hole{position:absolute;top:2.5mm;left:50%;margin-left:-3mm;width:6mm;height:6mm;border:2px solid #111;border-radius:50%;background:#fff}.f{padding:1.2mm 3mm;border-bottom:1px dotted #999}.f small{display:block;color:#555;font-size:9px}</style></head><body>${html}<script>setTimeout(()=>print(),600)<\/script></body></html>`);w.document.close()}
@@ -236,8 +246,8 @@ function printTag(id){const c=find(id),st=state(c),red=st.red,bg=red?'#C62828':'
   ${F('ටැග් අංකය · Tag no.',red?c.rtag:c.ytag)}${F('භාණ්ඩය · Item',c.item+(c.qty>1?' × '+c.qty:''))}${F('ඉන්වෙන්ටරි අංකය · Inv. no.',c.inv)}${F('ඒකකය · Unit',c.unit)}${F('මාදිලිය / අනු අංකය · Model / Serial',c.model)}${F('දෝෂය · Fault',c.fault)}${F('වාර්තා කළ දිනය · Date reported',c.date)}${red?F('රතු ටැග් දිනය · Red tag date',(c.done.r||{}).date)+F('අනුමැති අංකය · Approval no.',''):F('ඉල්ලීම් / ලිපි අංකය · Request / Letter no.',((c.done.lm||c.done.lt||c.done.p47||{}).ref)||'')}
   <div style="position:absolute;bottom:0;left:0;right:0;background:${bg};color:${fg};text-align:center;padding:1.5mm;font-weight:700;font-size:10px">ප්‍රාදේශීය රෝහල, ගන්තුන · DH Ganthuna</div></div>`)}
 function printCase(id){const c=find(id),st=state(c);
-  const rows=st.S.map((s,i)=>{const d=c.done[s[0]]||{};return `<tr><td>${i+1}</td><td><b>${esc(s[1])}</b><br>${esc(s[2])}</td><td>${esc(s[4]==='dec'?(c.outcome==='repaired'?'Repaired':c.outcome==='condemn'?'Cannot repair':''):s[3])}</td><td>${esc(d.ref||'')}</td><td>${esc(d.date||'')}</td><td>${d.ok?'✔':''}</td><td>${esc(d.note||'')}</td></tr>`}).join('');
-  pw(`<h2 style="margin:0">අලුත්වැඩියා / අවලංගු කිරීමේ පත්‍රය · Repair / Condemn Case Sheet</h2><p style="margin:4px 0 10px">ප්‍රාදේශීය රෝහල, ගන්තුන · Divisional Hospital, Ganthuna</p>
+  const rows=st.S.map((s,i)=>{const d=c.done[s[0]]||{};return `<tr><td>${i+1}</td><td><b>${esc(s[1])}</b><br>${esc(s[2])}</td><td>${esc(s[4]==='dec'?(c.outcome==='repaired'?'Repaired':c.outcome==='condemn'?'Cannot repair':''):s[4]==='dec2'?(c.decision?c.decision+' – '+DECS[c.decision][1]:''):s[3])}</td><td>${esc(d.ref||'')}</td><td>${esc(d.date||'')}</td><td>${d.ok?'✔':''}</td><td>${esc(d.note||'')}</td></tr>`}).join('');
+  pw(`<h2 style="margin:0">අලුත්වැඩියා / අපහරණ පත්‍රය · Repair / Condemn Case Sheet</h2><p style="margin:4px 0 10px">ප්‍රාදේශීය රෝහල, ගන්තුන · Divisional Hospital, Ganthuna</p>
   <table><tr><th>Tag</th><td>${esc(c.ytag)} ${esc(c.rtag||'')}</td><th>Type</th><td>${TYPES[c.type][1]}</td></tr><tr><th>Item</th><td>${esc(c.item)} ${c.qty>1?'× '+esc(c.qty):''}</td><th>Inv. no.</th><td>${esc(c.inv)}</td></tr><tr><th>Unit</th><td>${esc(c.unit)}</td><th>Model / Serial</th><td>${esc(c.model)}</td></tr><tr><th>Fault</th><td colspan="3">${esc(c.fault)}</td></tr><tr><th>Reported</th><td>${esc(c.date)}</td><th>Days</th><td>${days(c.date)}</td></tr></table><br>
   <table><tr><th>#</th><th>Step</th><th>Document</th><th>Ref. no.</th><th>Date</th><th>Done</th><th>Note</th></tr>${rows}</table><br><br><p>.................................................<br>වෛද්‍ය නිලධාරී භාරව · Medical Officer in charge</p>`)}
 render();
