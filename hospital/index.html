@@ -339,6 +339,12 @@ function loadStock(){try{const s=JSON.parse(localStorage.getItem(KEY)||&quot;{}&
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(stock));storageOK=true}catch(e){storageOK=false}renderBanner()}
 function lastBackup(){try{return localStorage.getItem(KEYB)}catch(e){return null}}
 stock=loadStock();
+/* Entered by Claude for DH Ganthuna – applied once on each device */
+const SEED=[{k:&quot;2026-11-27-pcm-syr&quot;,id:&quot;R03-L01-03&quot;,exp:&quot;2027-02&quot;,qty:120}];
+try{const KS=&quot;ganthuna-drugstore-seeds&quot;;const done=JSON.parse(localStorage.getItem(KS)||&quot;[]&quot;);let ch=false;
+for(const x of SEED){if(done.includes(x.k))continue;const cur=(stock[x.id]&amp;&amp;Array.isArray(stock[x.id].batches))?stock[x.id].batches:[];
+if(!cur.some(b=&gt;b.exp===x.exp&amp;&amp;Number(b.qty)===x.qty))cur.push({exp:x.exp,qty:x.qty});stock[x.id]={batches:cur,updated:new Date().toISOString()};done.push(x.k);ch=true}
+if(ch){localStorage.setItem(KEY,JSON.stringify(stock));localStorage.setItem(KS,JSON.stringify(done))}}catch(e){for(const x of SEED){if(!stock[x.id])stock[x.id]={batches:[{exp:x.exp,qty:x.qty}]}}}
 try{navigator.storage&amp;&amp;navigator.storage.persist&amp;&amp;navigator.storage.persist()}catch(e){}
 try{localStorage.setItem(&quot;__t&quot;,&quot;1&quot;);localStorage.removeItem(&quot;__t&quot;)}catch(e){storageOK=false}
 
