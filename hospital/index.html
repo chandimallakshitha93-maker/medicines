@@ -351,7 +351,7 @@ try{localStorage.setItem(&quot;__t&quot;,&quot;1&quot;);localStorage.removeItem(
 /* ---------- expiry logic ---------- */
 const MONTHS=[&quot;Jan&quot;,&quot;Feb&quot;,&quot;Mar&quot;,&quot;Apr&quot;,&quot;May&quot;,&quot;Jun&quot;,&quot;Jul&quot;,&quot;Aug&quot;,&quot;Sep&quot;,&quot;Oct&quot;,&quot;Nov&quot;,&quot;Dec&quot;];
 function endOfMonth(ym){const [y,m]=ym.split(&quot;-&quot;).map(Number);return new Date(y,m,0,23,59,59)}
-function batchStatus(ym){const e=endOfMonth(ym),now=new Date(),soon=new Date(now.getFullYear(),now.getMonth()+3,now.getDate());return e&lt;now?&quot;bad&quot;:e&lt;=soon?&quot;soon&quot;:&quot;ok&quot;}
+function batchStatus(ym){const e=endOfMonth(ym),now=new Date();const [y,m]=ym.split(&quot;-&quot;).map(Number);const ahead=(y*12+m-1)-(now.getFullYear()*12+now.getMonth());return e&lt;now?&quot;bad&quot;:ahead&lt;=3?&quot;soon&quot;:&quot;ok&quot;}
 function itemInfo(id){const b=(stock[id]&amp;&amp;Array.isArray(stock[id].batches)?stock[id].batches:[]).filter(x=&gt;x&amp;&amp;/^\d{4}-\d{2}$/.test(x.exp)).slice().sort((a,b)=&gt;a.exp.localeCompare(b.exp));
   const qty=b.reduce((s,x)=&gt;s+(Number(x.qty)||0),0); if(!b.length) return {b,qty,status:&quot;none&quot;,near:null};
   const rank={bad:0,soon:1,ok:2}; let st=&quot;ok&quot;; for(const x of b){const s=batchStatus(x.exp); if(rank[s]&lt;rank[st]) st=s} return {b,qty,status:st,near:b[0].exp}}
