@@ -243,8 +243,9 @@ h1 small{display:block;font-family:var(--body);font-weight:400;font-size:13px;le
 .seg button{border:0;border-radius:0}.seg button[aria-pressed=&quot;true&quot;]{background:var(--accent);color:var(--accent-ink)}
 button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .hint{position:absolute;left:10px;bottom:10px;font-size:12px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:5px 9px;max-width:calc(100% - 20px)}
-.legend{position:absolute;right:10px;bottom:10px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12px;display:grid;grid-template-columns:auto auto;gap:3px 12px}
-.legend span{display:flex;align-items:center;gap:6px;white-space:nowrap}.legend i{width:11px;height:11px;border-radius:3px;border:1px solid rgba(0,0,0,.25);flex:none}
+.legend{position:absolute;right:10px;bottom:48px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12px;display:grid;grid-template-columns:auto auto;gap:3px 12px}
+.legend span{display:flex;align-items:center;gap:6px;white-space:nowrap}.legend .lh{grid-column:1/-1;font-size:11px;margin-top:3px;color:var(--muted,#555)}
+.ckey{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:13px;padding:6px 12px;margin:0 0 8px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}.ckey span{display:flex;align-items:center;gap:6px}.ckey i{width:12px;height:12px;border-radius:50%;flex:none;border:1px solid rgba(0,0,0,.2)}.ckey em{font-style:normal;color:var(--muted,#666);font-size:12px}.legend i{width:11px;height:11px;border-radius:3px;border:1px solid rgba(0,0,0,.25);flex:none}
 .panel{min-height:0;display:flex;flex-direction:column;gap:10px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px}
 .search{padding:10px}
@@ -302,6 +303,7 @@ td input{width:76px;font:inherit;padding:4px 6px;border:1px solid var(--line);bo
       &lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;banner&quot; id=&quot;banner&quot; hidden&gt;&lt;/div&gt;
+    &lt;div class=&quot;ckey&quot; id=&quot;ckey&quot; style=&quot;flex-basis:100%&quot;&gt;&lt;/div&gt;
   &lt;/header&gt;
   &lt;div class=&quot;stage&quot;&gt;
     &lt;canvas id=&quot;cv&quot; aria-label=&quot;3D view of the drug store racks&quot;&gt;&lt;/canvas&gt;
@@ -539,7 +541,9 @@ function save(id,batches){if(batches.length) stock[id]={batches,updated:new Date
   const n=$(&quot;#saveNote&quot;); if(n) n.textContent=storageOK?&quot;Saved on this device.&quot;:&quot;This browser is not keeping records. Tap Back up before closing.&quot;}
 function select(id,go){selected=id;confirmBox=null;refresh();if(go)focusItem(id);const r=document.querySelector(`.row[data-id=&quot;${id}&quot;]`);if(r)r.scrollIntoView({block:&quot;nearest&quot;})}
 function setMode(m){mode=m;$(&quot;#mLabel&quot;).setAttribute(&quot;aria-pressed&quot;,m===&quot;label&quot;);$(&quot;#mExp&quot;).setAttribute(&quot;aria-pressed&quot;,m===&quot;exp&quot;);renderLegend();dirty=true;renderDetail()}
-function renderLegend(){$(&quot;#legend&quot;).innerHTML=mode===&quot;label&quot;?Object.entries(CLASS_OF_PAPER).map(([p,n])=&gt;`&lt;span&gt;&lt;i style=&quot;background:${PAPER[p]}&quot;&gt;&lt;/i&gt;${n}&lt;/span&gt;`).join(&quot;&quot;):Object.entries(ST_LABEL).map(([k,n])=&gt;`&lt;span&gt;&lt;i style=&quot;background:var(--${k})&quot;&gt;&lt;/i&gt;${n}&lt;/span&gt;`).join(&quot;&quot;)}
+function renderLegend(){const st=Object.entries(ST_LABEL).map(([k,n])=&gt;`&lt;span&gt;&lt;i style=&quot;background:var(--${k})&quot;&gt;&lt;/i&gt;${n}&lt;/span&gt;`).join(&quot;&quot;);
+$(&quot;#legend&quot;).innerHTML=(mode===&quot;label&quot;?`&lt;b class=&quot;lh&quot;&gt;ලේබල් පැහැය · Label colour (drug class)&lt;/b&gt;`+Object.entries(CLASS_OF_PAPER).map(([p,n])=&gt;`&lt;span&gt;&lt;i style=&quot;background:${PAPER[p]}&quot;&gt;&lt;/i&gt;${n}&lt;/span&gt;`).join(&quot;&quot;)+`&lt;b class=&quot;lh&quot;&gt;කල් ඉකුත්වීම · Expiry (dot in list)&lt;/b&gt;`:`&lt;b class=&quot;lh&quot;&gt;කල් ඉකුත්වීම · Expiry status (box colour)&lt;/b&gt;`)+st;
+const k=document.getElementById(&quot;ckey&quot;);if(k)k.innerHTML=`&lt;b&gt;වර්ණ කේත · Colour key:&lt;/b&gt;`+Object.entries(ST_LABEL).map(([k2,n])=&gt;`&lt;span&gt;&lt;i style=&quot;background:var(--${k2})&quot;&gt;&lt;/i&gt;${n}&lt;/span&gt;`).join(&quot;&quot;)+`&lt;em&gt;${mode===&quot;label&quot;?&quot;Boxes = label paper colour · press “Expiry status” to colour boxes by expiry&quot;:&quot;Boxes coloured by expiry · press “Label colour” for drug-class colours&quot;}&lt;/em&gt;`}
 $(&quot;#mLabel&quot;).onclick=()=&gt;setMode(&quot;label&quot;);$(&quot;#mExp&quot;).onclick=()=&gt;setMode(&quot;exp&quot;);$(&quot;#vReset&quot;).onclick=()=&gt;flyTo(HOME);$(&quot;#vTop&quot;).onclick=()=&gt;flyTo(TOP);
 function refresh(){renderStats();renderList();renderDetail();renderBanner();dirty=true}
 
